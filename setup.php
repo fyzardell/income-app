@@ -2,7 +2,7 @@
 /**
  * INCOME — Coffee & Bakery
  * Skrip Inisialisasi Database Otomatis
- * Jalankan file ini via browser (misal: http://localhost/INCOME/setup.php)
+ * Jalankan file ini via browser (misal: http://localhost/web_income/setup.php)
  * atau via CLI: php setup.php
  */
 

@@ -9,9 +9,13 @@ echo ========================================================
 start "INCOME Backend Server" cmd /k "%~dp0run-backend.bat"
 timeout /t 2 /nobreak >nul
 start "INCOME Frontend Vite" cmd /k "%~dp0run-frontend.bat"
+timeout /t 3 /nobreak >nul
 
 echo.
-echo Server sedang dimulai...
+echo Membuka browser...
+start http://localhost:5173
+
+echo.
 echo Website dapat diakses di: http://localhost:5173
 echo.
 pause

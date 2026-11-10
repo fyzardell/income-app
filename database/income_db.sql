@@ -1,8 +1,3 @@
--- ============================================================
--- INCOME — Coffee & Bakery
--- Database Schema & Initial Data
--- ============================================================
-
 CREATE DATABASE IF NOT EXISTS `income_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `income_db`;
 

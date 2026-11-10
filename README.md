@@ -42,6 +42,7 @@ web_income/
 ├── database/
 │   ├── schema.sql                # Skema lengkap PRD/ERD & Data Seed Awal
 │   └── income_db.sql             # Skrip database lama (backup)
+├── run-all.bat                   # Script 1-klik jalankan Backend & Frontend sekaligus
 ├── run-backend.bat               # Script 1-klik jalankan Backend Go (:8080)
 ├── run-frontend.bat              # Script 1-klik jalankan Frontend Vite (:5173)
 └── README.md
@@ -104,8 +105,10 @@ web_income/
 ### Menjalankan Aplikasi:
 
 #### Opsi A: Jalankan Menggunakan Script 1-Klik
-- Dobel klik **`run-backend.bat`** (menjalankan Go Backend pada `http://localhost:8080`)
-- Dobel klik **`run-frontend.bat`** (menjalankan React + Vite pada `http://localhost:5173`)
+- Dobel klik **`run-all.bat`** (otomatis membuka Go Backend & React Vite di window terpisah)
+- Atau secara terpisah:
+  - Dobel klik **`run-backend.bat`** (menjalankan Go Backend pada `http://localhost:8080`)
+  - Dobel klik **`run-frontend.bat`** (menjalankan React + Vite pada `http://localhost:5173`)
 - Buka browser di **`http://localhost:5173`**
 
 #### Opsi B: Jalankan Mode Single Binary (All-in-One)

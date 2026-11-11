@@ -63,9 +63,11 @@ func Connect(dbSource string) (*sql.DB, error) {
 func applySchema(db *sql.DB) error {
 	// Try finding schema.sql in known locations
 	paths := []string{
-		"../../database/schema.sql",
-		"../database/schema.sql",
+		"schema.sql",
+		"./schema.sql",
 		"database/schema.sql",
+		"../database/schema.sql",
+		"../../database/schema.sql",
 		"c:/laragon/www/web_income/database/schema.sql",
 	}
 

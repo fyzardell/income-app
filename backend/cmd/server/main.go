@@ -168,9 +168,12 @@ func main() {
 	mux.Handle("/assets/", fileServer)
 
 	// --- Serve Frontend Dist if available (Single-page app mode) ---
-	frontendDist := "../frontend/dist"
-	if _, err := os.Stat(frontendDist); os.IsNotExist(err) {
-		frontendDist = "frontend/dist"
+	frontendDist := "dist"
+	if fi, err := os.Stat(frontendDist); os.IsNotExist(err) || !fi.IsDir() {
+		frontendDist = "../frontend/dist"
+		if fi2, err2 := os.Stat(frontendDist); os.IsNotExist(err2) || !fi2.IsDir() {
+			frontendDist = "frontend/dist"
+		}
 	}
 	if fi, err := os.Stat(frontendDist); err == nil && fi.IsDir() {
 		absDist, _ := filepath.Abs(frontendDist)

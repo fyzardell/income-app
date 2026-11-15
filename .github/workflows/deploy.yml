@@ -44,6 +44,17 @@ jobs:
           cp -r frontend/dist deploy_bundle/dist
           cp database/schema.sql deploy_bundle/schema.sql
 
+      - name: Stop Service Before Update
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME || secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            systemctl stop income-app || true
+            rm -f /var/www/income/income-server || true
+
       - name: Deploy to Tencent VPS via SCP
         uses: appleboy/scp-action@master
         with:

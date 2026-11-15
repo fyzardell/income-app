@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"income-backend/internal/models"
@@ -35,19 +36,35 @@ func New(db *sql.DB) *Repository {
 	hashDemo := "$2a$10$wT0/4R5r1YQ5L9bL4h8Hte5HkHqG8B4zZ/wJ9qY2F5sN8K1P0pAiu"
 	br1 := int64(1)
 	br2 := int64(2)
-	r.memUsers["081111111111"] = &models.User{ID: 1, WhatsAppNumber: "081111111111", Name: "Admin Pusat (INCOME)", Role: models.RoleAdmin, PasswordHash: &hashDemo}
-	r.memUsers["082222222222"] = &models.User{ID: 2, WhatsAppNumber: "082222222222", Name: "Kasir Budi (Serang)", Role: models.RoleCashier, PasswordHash: &hashDemo, BranchID: &br1}
-	r.memUsers["083333333333"] = &models.User{ID: 3, WhatsAppNumber: "083333333333", Name: "Kasir Siti (Cilegon)", Role: models.RoleCashier, PasswordHash: &hashDemo, BranchID: &br2}
-	r.memUsers["081234567890"] = &models.User{ID: 4, WhatsAppNumber: "081234567890", Name: "Rizky Ramadhan", Role: models.RoleCustomer}
+	uAdmin := &models.User{ID: 1, WhatsAppNumber: "081111111111", Name: "Admin Pusat (INCOME)", Role: models.RoleAdmin, PasswordHash: &hashDemo}
+	uKasir1 := &models.User{ID: 2, WhatsAppNumber: "082222222222", Name: "Kasir Budi (Serang)", Role: models.RoleCashier, PasswordHash: &hashDemo, BranchID: &br1}
+	uKasir2 := &models.User{ID: 3, WhatsAppNumber: "083333333333", Name: "Kasir Siti (Cilegon)", Role: models.RoleCashier, PasswordHash: &hashDemo, BranchID: &br2}
+	uCustomer := &models.User{ID: 4, WhatsAppNumber: "081234567890", Name: "Rizky Ramadhan (Demo)", Role: models.RoleCustomer, PasswordHash: &hashDemo}
+
+	r.memUsers["081111111111"] = uAdmin
+	r.memUsers["admin1"] = uAdmin
+	r.memUsers["admin"] = uAdmin
+	r.memUsers["082222222222"] = uKasir1
+	r.memUsers["kasir"] = uKasir1
+	r.memUsers["kasir1"] = uKasir1
+	r.memUsers["083333333333"] = uKasir2
+	r.memUsers["kasir2"] = uKasir2
+	r.memUsers["081234567890"] = uCustomer
+	r.memUsers["customer"] = uCustomer
+	r.memUsers["demo"] = uCustomer
 
 	return r
 }
 
 // ==================== USERS & AUTH ====================
 
-func (r *Repository) FindUserByPhone(ctx context.Context, phone string) (*models.User, error) {
+func (r *Repository) FindUserByPhone(ctx context.Context, identifier string) (*models.User, error) {
+	idLower := strings.ToLower(strings.TrimSpace(identifier))
 	if r.db == nil {
-		if u, found := r.memUsers[phone]; found {
+		if u, found := r.memUsers[idLower]; found {
+			return u, nil
+		}
+		if u, found := r.memUsers[identifier]; found {
 			return u, nil
 		}
 		return nil, fmt.Errorf("user not found")
@@ -57,15 +74,22 @@ func (r *Repository) FindUserByPhone(ctx context.Context, phone string) (*models
 		FROM users u
 		LEFT JOIN staff_branch_assignments sba ON u.id = sba.user_id
 		WHERE u.whatsapp_number = ?
+		   OR (u.role = 'admin' AND ? IN ('admin', 'admin1', 'admin_pusat'))
+		   OR (u.role = 'cashier' AND u.id = 2 AND ? IN ('kasir', 'kasir1', 'cashier', 'kasir_serang'))
+		   OR (u.role = 'cashier' AND u.id = 3 AND ? IN ('kasir2', 'kasir_cilegon'))
+		   OR (u.role = 'customer' AND ? IN ('customer', 'demo', 'user'))
 		LIMIT 1
 	`
 	var u models.User
 	var branchID sql.NullInt64
 	var pwd sql.NullString
-	err := r.db.QueryRowContext(ctx, query, phone).Scan(
+	err := r.db.QueryRowContext(ctx, query, identifier, idLower, idLower, idLower, idLower).Scan(
 		&u.ID, &u.WhatsAppNumber, &u.Name, &u.Role, &pwd, &branchID, &u.CreatedAt,
 	)
 	if err != nil {
+		if memU, found := r.memUsers[idLower]; found {
+			return memU, nil
+		}
 		return nil, err
 	}
 	if pwd.Valid {

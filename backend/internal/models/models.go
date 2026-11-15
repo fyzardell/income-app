@@ -251,7 +251,9 @@ type OTPVerifyRequest struct {
 }
 
 type StaffLoginRequest struct {
-	WhatsAppNumber string `json:"whatsapp_number"`
+	Username       string `json:"username,omitempty"`
+	WhatsAppNumber string `json:"whatsapp_number,omitempty"`
+	Phone          string `json:"phone,omitempty"`
 	Password       string `json:"password"`
 }
 

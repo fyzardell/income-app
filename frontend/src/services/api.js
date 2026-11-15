@@ -33,7 +33,21 @@ export const api = {
   validateQR: (token) => fetch(`${API_BASE}/tables/validate-qr?token=${encodeURIComponent(token)}`).then(handleResponse),
   getBranchMenu: (branchId) => fetch(`${API_BASE}/branches/${branchId}/menu`).then(handleResponse),
 
-  // Auth
+  // Auth (Username & Password)
+  login: (username, password) =>
+    fetch(`${API_BASE}/auth/staff/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    }).then(handleResponse),
+
+  staffLogin: (username, password) =>
+    fetch(`${API_BASE}/auth/staff/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    }).then(handleResponse),
+
   requestOTP: (whatsapp_number) =>
     fetch(`${API_BASE}/auth/otp/request`, {
       method: 'POST',
@@ -46,13 +60,6 @@ export const api = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ whatsapp_number, otp, name }),
-    }).then(handleResponse),
-
-  staffLogin: (whatsapp_number, password) =>
-    fetch(`${API_BASE}/auth/staff/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ whatsapp_number, password }),
     }).then(handleResponse),
 
   getProfile: () =>

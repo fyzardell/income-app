@@ -172,14 +172,22 @@ func (h *Handler) StaffLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, token, err := h.svc.StaffLogin(r.Context(), req.WhatsAppNumber, req.Password)
+	identifier := req.Username
+	if identifier == "" {
+		identifier = req.Phone
+	}
+	if identifier == "" {
+		identifier = req.WhatsAppNumber
+	}
+
+	user, token, err := h.svc.StaffLogin(r.Context(), identifier, req.Password)
 	if err != nil {
 		errorResponse(w, http.StatusUnauthorized, err.Error())
 		return
 	}
 
 	jsonResponse(w, http.StatusOK, map[string]interface{}{
-		"message": "Login staf berhasil",
+		"message": "Login berhasil",
 		"token":   token,
 		"user":    user,
 	})

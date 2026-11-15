@@ -18,14 +18,33 @@ export function AppContent() {
   const [activeOrderNumber, setActiveOrderNumber] = useState('');
   const [qrPrintData, setQrPrintData] = useState({ tables: [], branchId: 1 });
 
-  // Handle URL hash or path on load
+  // Handle URL hash, query param, or path on load
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const orderParam = params.get('order');
+    const tabParam = params.get('tab');
+    const hash = window.location.hash.replace('#', '').toLowerCase();
+    const pathname = window.location.pathname.replace(/^\//, '').toLowerCase();
+
     if (orderParam) {
       setActiveOrderNumber(orderParam);
       setActiveTab('order-status');
+    } else if (tabParam) {
+      setActiveTab(tabParam);
+    } else if (hash === 'admin' || hash === 'cashier' || hash === 'dashboard' || hash === 'my-orders') {
+      setActiveTab(hash === 'dashboard' ? 'admin' : hash);
+    } else if (pathname === 'admin' || pathname === 'cashier' || pathname === 'dashboard' || pathname === 'my-orders') {
+      setActiveTab(pathname === 'dashboard' ? 'admin' : pathname);
     }
+
+    const handleHashChange = () => {
+      const h = window.location.hash.replace('#', '').toLowerCase();
+      if (h === 'admin' || h === 'cashier' || h === 'dashboard' || h === 'my-orders' || h === 'home') {
+        setActiveTab(h === 'dashboard' ? 'admin' : h);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   const handleOrderSuccess = (createdOrder) => {

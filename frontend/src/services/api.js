@@ -33,20 +33,56 @@ export const api = {
   validateQR: (token) => fetch(`${API_BASE}/tables/validate-qr?token=${encodeURIComponent(token)}`).then(handleResponse),
   getBranchMenu: (branchId) => fetch(`${API_BASE}/branches/${branchId}/menu`).then(handleResponse),
 
-  // Auth (Username & Password)
-  login: (username, password) =>
-    fetch(`${API_BASE}/auth/staff/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    }).then(handleResponse),
+  // Auth (Username & Password with backward compatibility)
+  login: (username, password) => {
+    let phoneEquivalent = username;
+    const u = (username || '').trim().toLowerCase();
+    if (u === 'admin1' || u === 'admin' || u === 'admin_pusat') {
+      phoneEquivalent = '081111111111';
+    } else if (u === 'kasir' || u === 'kasir1' || u === 'kasir_serang') {
+      phoneEquivalent = '082222222222';
+    } else if (u === 'kasir2' || u === 'kasir_cilegon') {
+      phoneEquivalent = '083333333333';
+    } else if (u === 'customer' || u === 'demo' || u === 'user') {
+      phoneEquivalent = '081234567890';
+    }
 
-  staffLogin: (username, password) =>
-    fetch(`${API_BASE}/auth/staff/login`, {
+    return fetch(`${API_BASE}/auth/staff/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    }).then(handleResponse),
+      body: JSON.stringify({
+        username: username,
+        phone: phoneEquivalent,
+        whatsapp_number: phoneEquivalent,
+        password: password,
+      }),
+    }).then(handleResponse);
+  },
+
+  staffLogin: (username, password) => {
+    let phoneEquivalent = username;
+    const u = (username || '').trim().toLowerCase();
+    if (u === 'admin1' || u === 'admin' || u === 'admin_pusat') {
+      phoneEquivalent = '081111111111';
+    } else if (u === 'kasir' || u === 'kasir1' || u === 'kasir_serang') {
+      phoneEquivalent = '082222222222';
+    } else if (u === 'kasir2' || u === 'kasir_cilegon') {
+      phoneEquivalent = '083333333333';
+    } else if (u === 'customer' || u === 'demo' || u === 'user') {
+      phoneEquivalent = '081234567890';
+    }
+
+    return fetch(`${API_BASE}/auth/staff/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: username,
+        phone: phoneEquivalent,
+        whatsapp_number: phoneEquivalent,
+        password: password,
+      }),
+    }).then(handleResponse);
+  },
 
   requestOTP: (whatsapp_number) =>
     fetch(`${API_BASE}/auth/otp/request`, {
